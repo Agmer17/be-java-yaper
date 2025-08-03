@@ -33,7 +33,7 @@ public class JWTUtil {
                 .claim("username", username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(key) // ✅ Versi baru, tidak deprecated
+                .signWith(key)
                 .compact();
     }
 

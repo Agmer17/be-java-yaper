@@ -3,10 +3,10 @@ POST http://localhost:3000/api/auth/sign-in
 Content-Type: application/json
 
 {
-  "username": "hiura_UwU",
-  "email": "hiura@gmail.com",
-  "full_name": "hiura mihate",
-  "password": "1234567"
+  "username": "agmer_dev",
+  "email": "agmer@gmail.com",
+  "full_name": "rizky ramadhan agmer",
+  "password": "agmer1234"
 }
 
 ### login
@@ -14,12 +14,12 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-  "username" : "hiura_UwU",
-  "password" : "1234567"
+  "username" : "agmer_dev",
+  "password" : "agmer1234"
 }
 
 ### get profile (me)
 GET http://localhost:3000/api/users/@me
-Authorization:Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6MTksInVzZXJuYW1lIjoiYWdtZXIxMjM0IiwiaWF0IjoxNzU0MTM1MTc1LCJleHAiOjE3NTQyMjE1NzV9.IFQbPFwUHnxvov7v6lMlaGi0D0fr0Px_E41ollt28e3vXo6BWRGLgoO0JiPDe3H3
+Authorization:Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6MjAsInVzZXJuYW1lIjoiYWdtZXIxMjM0IiwiaWF0IjoxNzU0MjAxNjcxLCJleHAiOjE3NTQyODgwNzF9.wIGRmICu8Wzjx38hzTrmKnI73ePb1EB6XhIFZcT2xSWDE7rPMQZGZA3CQPr144Mt
 Accept: application/json
 
