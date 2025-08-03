@@ -3,9 +3,9 @@ POST http://localhost:3000/api/auth/sign-in
 Content-Type: application/json
 
 {
-  "username": "agmer_dev",
-  "email": "agmer@gmail.com",
-  "full_name": "rizky ramadhan agmer",
+  "username": "moimoi",
+  "email": "momoi@gmail.com",
+  "full_name": "momo ayase",
   "password": "agmer1234"
 }
 
@@ -20,6 +20,6 @@ Content-Type: application/json
 
 ### get profile (me)
 GET http://localhost:3000/api/users/@me
-Authorization:Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6MjAsInVzZXJuYW1lIjoiYWdtZXIxMjM0IiwiaWF0IjoxNzU0MjAxNjcxLCJleHAiOjE3NTQyODgwNzF9.wIGRmICu8Wzjx38hzTrmKnI73ePb1EB6XhIFZcT2xSWDE7rPMQZGZA3CQPr144Mt
+Authorization:Bearer p
 Accept: application/json
 

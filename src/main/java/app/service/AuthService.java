@@ -47,7 +47,7 @@ public class AuthService {
         if (verifyPassword) {
             Integer id = Integer.valueOf(userData.get("id").toString());
             Map<String, Object> jwtData = new LinkedHashMap<>();
-            String accessToken = jwt.generateToken(id, plainPw);
+            String accessToken = jwt.generateToken(id, loginData.getUsername());
 
             jwtData.put("accessToken", accessToken);
 

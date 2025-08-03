@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import app.model.auth.SignInModel;
+import app.model.entity.UserModelResponse;
 
 @Repository
 public class UserRepo {
@@ -46,6 +48,29 @@ public class UserRepo {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username, Types.VARCHAR);
 
         Map<String, Object> result = template.queryForMap(sql, params);
+
+        return result;
+    }
+
+    public UserModelResponse getPublicDataByUsername(String username) {
+        var sql = """
+                select
+                    u.username,
+                    u.full_name
+                    as display_name,
+                    u.bio,
+                    u.profile_picture,
+                    u.birthday,
+                    u.created_at as joined_at,
+                    u.is_private as is_private_account
+                    from users u
+                where username = :username
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username, Types.VARCHAR);
+
+        UserModelResponse result = template.queryForObject(sql, params,
+                new BeanPropertyRowMapper<UserModelResponse>(UserModelResponse.class));
 
         return result;
     }
