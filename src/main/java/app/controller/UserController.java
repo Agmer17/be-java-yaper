@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.model.auth.ApiResponse;
-import app.model.entity.UserModelResponse;
+// import app.model.entity.UserModelResponse;
 import app.service.UserService;
 import io.jsonwebtoken.Claims;
 
@@ -25,8 +25,7 @@ public class UserController {
     @GetMapping("/@me")
     public ResponseEntity<ApiResponse> getMyAccount(@RequestAttribute("claims") Claims token) {
         String username = token.get("username", String.class);
-        System.out.println(username + "\n\n\n\n\n\n\n\n\n\n\n");
-        UserModelResponse userData = svc.getCurrentUserData(username);
+        Map<String, Object> userData = svc.getCurrentUserData(username);
         ApiResponse response = ApiResponse.builder()
                 .status("OK")
                 .message("BERHASIL MENGAMBIL DATA")

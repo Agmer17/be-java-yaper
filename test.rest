@@ -20,6 +20,6 @@ Content-Type: application/json
 
 ### get profile (me)
 GET http://localhost:3000/api/users/@me
-Authorization:Bearer p
+Authorization:Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6NiwidXNlcm5hbWUiOiJtb2ltb2kiLCJpYXQiOjE3NTQ0MDExMDgsImV4cCI6MTc1NDQ4NzUwOH0.IZafekTh3nCqOKMkneNMKQhapOYq-ZJAdAuQNTeAOqn3FP72zWKzwHs8cb5yrc-5"
 Accept: application/json
 
