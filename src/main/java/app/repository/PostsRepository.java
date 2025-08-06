@@ -2,6 +2,7 @@ package app.repository;
 
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -54,5 +55,25 @@ public class PostsRepository {
                                 params,
                                 new BeanPropertyRowMapper<DetailedPost>(DetailedPost.class));
                 return result;
+        }
+
+        // author id, prent id, text content, media url
+        public Map<String, Object> savePostsWithMedia(Integer id, String parentId, String textContent,
+                        String mediaFileName) {
+
+                var sql = """
+                                insert into posts(author_id, parent_id, text_content, media_url )
+                                values(:authorId , :parentId , :textContent , :mediaUrl )
+                                returning created_at, id
+                                """;
+                MapSqlParameterSource params = new MapSqlParameterSource()
+                                .addValue("authorId", id, Types.INTEGER)
+                                .addValue("parentId", parentId, Types.OTHER)
+                                .addValue("textContent", textContent, Types.VARCHAR)
+                                .addValue("mediaUrl", mediaFileName, Types.VARCHAR);
+
+                Map<String, Object> resultData = template.queryForMap(sql, params);
+
+                return resultData;
         }
 }

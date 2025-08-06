@@ -26,15 +26,27 @@ public class ContentPostService {
         return data;
     }
 
-    public Map<String, Object> uploadsNewPosts(String textContent, MultipartFile mediaFile) throws IOException {
-        InputStream fileStream = mediaFile.getInputStream();
-        ImageType mediaType = ImageFileVerificator.verifyImageType(fileStream);
+    public Map<String, Object> uploadsNewPosts(String textContent, MultipartFile mediaFile, Integer id, String parentId)
+            throws IOException {
 
-        if (mediaType == ImageType.UNKNOWN) {
-            throw new InvalidFileType("File gambar tidak valid! harap upload png, webp, jpg dan gif");
+        if (mediaFile != null) {
+            InputStream fileStream = mediaFile.getInputStream();
+            ImageType mediaType = ImageFileVerificator.verifyImageType(fileStream);
+
+            if (mediaType == ImageType.UNKNOWN) {
+                throw new InvalidFileType("File gambar tidak valid! harap upload png, webp, jpg dan gif");
+            }
+
+            // media file name if exists
+            String saveFileName = FileUtils.handleUploads(mediaFile, mediaType);
+
+            Map<String, Object> saveResult = repo.savePostsWithMedia(id, parentId, textContent, saveFileName);
+
+            return saveResult;
+        } else {
+            Map<String, Object> saveResult = repo.savePostsWithMedia(id, parentId, textContent, null);
+            return saveResult;
         }
-        String saveFileName = FileUtils.handleUploads(mediaFile, mediaType);
 
-        return Map.of("fileName", saveFileName);
     }
 }
