@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.model.entity.DetailedPost;
+import app.model.entity.PostWithAuthorDTO;
 import app.model.exception.InvalidFileType;
 import app.repository.PostsRepository;
 import app.utils.FileUtils;
@@ -48,5 +49,11 @@ public class ContentPostService {
             return saveResult;
         }
 
+    }
+
+    public List<PostWithAuthorDTO> getTimelinePosts() {
+        List<PostWithAuthorDTO> timelinePosts = repo.randTimeline();
+
+        return timelinePosts;
     }
 }
