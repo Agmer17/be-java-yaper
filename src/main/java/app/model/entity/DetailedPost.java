@@ -1,0 +1,45 @@
+package app.model.entity;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DetailedPost {
+    @JsonProperty("author_username")
+    private String authorUsername;
+
+    @JsonProperty("author_display_name")
+    private String authorDisplayName;
+
+    @JsonProperty("author_profile_photo")
+    private String authorProfilePhoto;
+
+    @JsonProperty("posts_id")
+    private UUID postsId;
+
+    @JsonProperty("post_created_at")
+    private LocalDateTime postCreatedAt;
+
+    @JsonProperty("post_reply_to")
+    private UUID postReplyTo;
+
+    @JsonProperty("post_text")
+    private String postText;
+
+    @JsonProperty("post_media")
+    private String postMedia;
+
+    @JsonProperty("reply_count")
+    private int replyCount;
+
+    @JsonProperty("is_parent")
+    private boolean parent;
+}

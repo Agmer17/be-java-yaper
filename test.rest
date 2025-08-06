@@ -23,3 +23,11 @@ GET http://localhost:3000/api/users/@me
 Authorization:Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZ21lcl9kZXYiLCJpYXQiOjE3NTQ0MDEyNjEsImV4cCI6MTc1NDQ4NzY2MX0.Fqudxc96NfOLYOXNqexXv6fyka-0D23IXf9tBmkNhJZOR4Q226muRcHJgihY2PnH
 Accept: application/json
 
+### get another user profile
+GET http://localhost:3000/api/users/marin_chan
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZ21lcl9kZXYiLCJpYXQiOjE3NTQ0MDEyNjEsImV4cCI6MTc1NDQ4NzY2MX0.Fqudxc96NfOLYOXNqexXv6fyka-0D23IXf9tBmkNhJZOR4Q226muRcHJgihY2PnH
+Accept: application/json
+
+### get Post data
+GET http://localhost:3000/api/posts/068f6939-ef0b-4174-8cf8-14d8a4b2218e
+

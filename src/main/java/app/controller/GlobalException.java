@@ -2,6 +2,7 @@ package app.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,9 +13,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import app.model.auth.ApiResponse;
+import app.model.exception.InvalidFileType;
+import io.jsonwebtoken.io.IOException;
 
 @ControllerAdvice
 public class GlobalException {
@@ -76,5 +80,37 @@ public class GlobalException {
                 .message("TERJADI KESALAHAN DI SERVER! HARAP COBA LAGI NANTI!").data(e.getMessage()).build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(resp);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        if (ex.getRequiredType() == UUID.class) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(ApiResponse.builder().status("BAD REQUEST")
+                            .message("format id untuk postingan yang kamu masukkan tuh gak valid!").data(null)
+                            .build());
+        }
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.builder().status("BAD REQUEST")
+                        .message("Parameter yang kamu masukkan di url tidak valid! harap periksa kembali!").data(null)
+                        .build());
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ApiResponse> handleSaveFileError(IOException ex) {
+        return ResponseEntity.badRequest().body(
+                ApiResponse.builder().status("ERROR")
+                        .message("error saat mengupload file ke server. harap cek kembali file nya").data(ex.getCause())
+                        .build());
+    }
+
+    @ExceptionHandler(InvalidFileType.class)
+    public ResponseEntity<ApiResponse> invalidFileTypeException(InvalidFileType e) {
+        return ResponseEntity.badRequest().body(
+                ApiResponse.builder().status("ERROR")
+                        .message("terjadi error saat memproses gambar")
+                        .data(e.getMessage()).build());
     }
 }
