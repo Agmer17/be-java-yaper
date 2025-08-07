@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import app.model.auth.SignInModel;
 import app.model.entity.PostWithAuthorDTO;
 import app.model.entity.UserModelResponse;
+import app.model.entity.UserSearchDTO;
 
 @Repository
 public class UserRepo {
@@ -119,4 +121,53 @@ public class UserRepo {
         fullResultData.put("post_data", postDataResult);
         return fullResultData;
     }
+
+    public List<UserSearchDTO> findAll(String keyword) {
+        var sql = """
+                select username,
+                full_name  as display_name,
+                profile_picture,
+                bio
+                from users
+                where username ilike :query
+                or full_name ilike :query;
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("query", "%" + keyword + "%");
+
+        RowMapper<UserSearchDTO> rowMapper = new BeanPropertyRowMapper<>(UserSearchDTO.class);
+
+        List<UserSearchDTO> result = template.query(sql, params, rowMapper);
+        return result;
+    }
 }
+
+// select
+
+// u.username as author_username,
+// u.full_name as author_display_name,
+// u.profile_picture as author_profile_photo,
+// p.id as posts_id,
+// p.created_at as post_created_at,
+// p.parent_id as post_reply_to,
+// p.text_content as post_text,
+// p.media_url as post_media,
+
+// count(r.id) as reply_count
+// from posts p
+// join users u on p.author_id = u.id
+// left join posts r on r.parent_id = p.id
+
+// where to_tsvector('indonesian', coalesce(p.text_content)) @@
+// websearch_to_tsquery('indonesian','selfie OR istri')
+// group by u.id,
+// u.username,
+// u.full_name,
+// u.profile_picture,
+// p.id,
+// p.created_at,
+// p.parent_id,
+// p.text_content,
+// p.media_url
+// order by p.created_at asc;

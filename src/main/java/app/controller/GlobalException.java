@@ -68,7 +68,7 @@ public class GlobalException {
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ApiResponse> notFoundException(EmptyResultDataAccessException e) {
         ApiResponse resp = ApiResponse.builder().status("NOT FOUND").message("AKUN ATAU POSTINGAN TIDAK DITEMUKAN!")
-                .data(null).build();
+                .data(e.getMessage()).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resp);
     }
