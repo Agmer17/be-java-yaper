@@ -49,7 +49,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             request.setAttribute("claims", claims);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), token);
+            throw new ExpiredJwtException(e.getHeader(), e.getClaims(), "token sudah kadaluarsa. silahkan login ulang",
+                    e.getCause());
         } catch (JwtException e) {
             throw new JwtException("Token yang kamu punya tidak valid! harap login ulang");
         }

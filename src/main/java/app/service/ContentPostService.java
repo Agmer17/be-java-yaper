@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import app.model.entity.DetailedPost;
-import app.model.entity.PostWithAuthorDTO;
+import app.model.common.BasePostDTO;
 import app.model.exception.InvalidFileType;
 import app.repository.PostsRepository;
 import app.utils.FileUtils;
@@ -22,8 +21,8 @@ public class ContentPostService {
     @Autowired
     private PostsRepository repo;
 
-    public List<DetailedPost> getPostDetail(String postId) {
-        List<DetailedPost> data = repo.findById(postId);
+    public Map<String, Object> getPostDetail(String postId) {
+        Map<String, Object> data = repo.findById(postId);
         return data;
     }
 
@@ -51,8 +50,8 @@ public class ContentPostService {
 
     }
 
-    public List<PostWithAuthorDTO> getTimelinePosts() {
-        List<PostWithAuthorDTO> timelinePosts = repo.randTimeline();
+    public List<BasePostDTO> getTimelinePosts() {
+        List<BasePostDTO> timelinePosts = repo.randTimeline();
 
         return timelinePosts;
     }

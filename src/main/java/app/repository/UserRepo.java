@@ -14,7 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import app.model.auth.SignInModel;
-import app.model.entity.PostWithAuthorDTO;
+import app.model.common.BasePostDTO;
 import app.model.entity.UserModelResponse;
 import app.model.entity.UserSearchDTO;
 
@@ -58,7 +58,7 @@ public class UserRepo {
     }
 
     // ini buat get post suatu user
-    public List<PostWithAuthorDTO> getPostAuthorDataProfile(String username) {
+    public List<BasePostDTO> getPostAuthorDataProfile(String username) {
         var sqlQuery = """
                 select
                     u.username as author_username,
@@ -87,10 +87,10 @@ public class UserRepo {
                         """;
 
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username);
-        List<PostWithAuthorDTO> result = template.query(
+        List<BasePostDTO> result = template.query(
                 sqlQuery,
                 params,
-                new BeanPropertyRowMapper<>(PostWithAuthorDTO.class));
+                new BeanPropertyRowMapper<>(BasePostDTO.class));
         return result;
     }
 
@@ -113,7 +113,7 @@ public class UserRepo {
 
         UserModelResponse result = template.queryForObject(sql, params,
                 new BeanPropertyRowMapper<UserModelResponse>(UserModelResponse.class));
-        List<PostWithAuthorDTO> postDataResult = this.getPostAuthorDataProfile(username);
+        List<BasePostDTO> postDataResult = this.getPostAuthorDataProfile(username);
 
         LinkedHashMap<String, Object> fullResultData = new LinkedHashMap<>();
 

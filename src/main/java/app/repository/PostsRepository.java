@@ -1,8 +1,11 @@
 package app.repository;
 
 import java.sql.Types;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -10,15 +13,15 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import app.model.common.BasePostDTO;
 import app.model.entity.DetailedPost;
-import app.model.entity.PostWithAuthorDTO;
 
 @Repository
 public class PostsRepository {
         @Autowired
         private NamedParameterJdbcTemplate template;
 
-        public List<DetailedPost> findById(String id) {
+        public Map<String, Object> findById(String id) {
 
                 var sql = """
                                 SELECT
@@ -55,7 +58,27 @@ public class PostsRepository {
                 List<DetailedPost> result = template.query(sql,
                                 params,
                                 new BeanPropertyRowMapper<DetailedPost>(DetailedPost.class));
-                return result;
+
+                Optional<DetailedPost> parentData = result.stream().filter(data -> {
+                        return data.isParent() || data.getPostsId().equals(UUID.fromString(id));
+                }).findFirst();
+
+                DetailedPost parent = null;
+
+                if (parentData.isPresent()) {
+                        parent = parentData.get();
+                        result.remove(parent);
+                }
+
+                if (result.size() == 0) {
+                        result = null;
+                }
+
+                Map<String, Object> returnData = new LinkedHashMap<>();
+                returnData.put("parent", parent);
+                returnData.put("reply", result);
+
+                return returnData;
         }
 
         // author id, prent id, text content, media url
@@ -78,7 +101,7 @@ public class PostsRepository {
                 return resultData;
         }
 
-        public List<PostWithAuthorDTO> randTimeline() {
+        public List<BasePostDTO> randTimeline() {
                 var sql = """
                                                 select
                                                 u.username as author_username,
@@ -93,6 +116,7 @@ public class PostsRepository {
                                                 from posts p
                                                 join users u on p.author_id = u.id
                                                 left join posts r on r.parent_id = p.id
+                                                where p.parent_id is null
                                                 group by u.id,
                                                 u.username,
                                                 u.full_name,
@@ -105,8 +129,8 @@ public class PostsRepository {
                                                 order by random()
                                                 limit 10
                                 """;
-                List<PostWithAuthorDTO> result = template.query(sql,
-                                new BeanPropertyRowMapper<>(PostWithAuthorDTO.class));
+                List<BasePostDTO> result = template.query(sql,
+                                new BeanPropertyRowMapper<>(BasePostDTO.class));
                 return result;
         }
 }

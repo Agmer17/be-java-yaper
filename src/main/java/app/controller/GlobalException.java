@@ -18,6 +18,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import app.model.auth.ApiResponse;
 import app.model.exception.InvalidFileType;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
 
 @ControllerAdvice
@@ -111,6 +113,20 @@ public class GlobalException {
         return ResponseEntity.badRequest().body(
                 ApiResponse.builder().status("ERROR")
                         .message("terjadi error saat memproses gambar")
+                        .data(e.getMessage()).build());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ApiResponse> expiredJwtException(ExpiredJwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ApiResponse.builder().status("UNAUTHORIZED").message("Sesi sudah habis silahkan login ulang")
+                        .data(e.getMessage()).build());
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiResponse> JwtExceptionHandler(JwtException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ApiResponse.builder().status("Parsing token error").message("gagal saat parsing token")
                         .data(e.getMessage()).build());
     }
 }

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.model.auth.ApiResponse;
-import app.model.entity.DetailedPost;
-import app.model.entity.PostWithAuthorDTO;
+import app.model.common.BasePostDTO;
 import app.model.exception.InvalidFileType;
 import app.service.ContentPostService;
 import io.jsonwebtoken.Claims;
@@ -35,7 +34,7 @@ public class PostsController {
 
         @GetMapping("/{postID}")
         public ResponseEntity<ApiResponse> getMethodName(@PathVariable UUID postID) {
-                List<DetailedPost> data = svc.getPostDetail(postID.toString());
+                Map<String, Object> data = svc.getPostDetail(postID.toString());
                 ApiResponse response = ApiResponse.builder()
                                 .status("OK").message("berhasil mengambil data postingan")
                                 .data(data).build();
@@ -68,7 +67,7 @@ public class PostsController {
 
         @GetMapping("/timeline")
         public ResponseEntity<ApiResponse> getMethodName() {
-                List<PostWithAuthorDTO> timelineData = svc.getTimelinePosts();
+                List<BasePostDTO> timelineData = svc.getTimelinePosts();
 
                 ApiResponse responseBody = ApiResponse.builder().status("Success")
                                 .message("berhasil mengambil data timeline").data(timelineData).build();
