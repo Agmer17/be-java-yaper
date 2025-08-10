@@ -34,8 +34,10 @@ public class PostsController {
         private ContentPostService svc;
 
         @GetMapping("/{postID}")
-        public ResponseEntity<ApiResponse> getMethodName(@PathVariable UUID postID) {
-                Map<String, List<DetailedPost>> data = svc.getPostDetail(postID.toString());
+        public ResponseEntity<ApiResponse> getMethodName(@PathVariable UUID postID,
+                        @RequestAttribute("claims") Claims token) {
+                Integer id = token.get("id", Integer.class);
+                Map<String, List<DetailedPost>> data = svc.getPostDetail(postID.toString(), id);
                 ApiResponse response = ApiResponse.builder()
                                 .status("OK").message("berhasil mengambil data postingan")
                                 .data(data).build();
@@ -67,8 +69,9 @@ public class PostsController {
         }
 
         @GetMapping("/timeline")
-        public ResponseEntity<ApiResponse> getMethodName() {
-                List<BasePostDTO> timelineData = svc.getTimelinePosts();
+        public ResponseEntity<ApiResponse> getTimeline(@RequestAttribute("claims") Claims token) {
+                Integer id = token.get("id", Integer.class);
+                List<BasePostDTO> timelineData = svc.getTimelinePosts(id);
 
                 ApiResponse responseBody = ApiResponse.builder().status("Success")
                                 .message("berhasil mengambil data timeline").data(timelineData).build();

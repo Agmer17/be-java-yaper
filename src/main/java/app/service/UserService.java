@@ -15,8 +15,8 @@ public class UserService {
     @Autowired
     private UserRepo repo;
 
-    public Map<String, Object> getUserData(String username) {
-        Map<String, Object> model = repo.getPublicDataByUsername(username);
+    public Map<String, Object> getUserData(String username, int id) {
+        Map<String, Object> model = repo.getPublicDataByUsername(username, id);
 
         return model;
     }

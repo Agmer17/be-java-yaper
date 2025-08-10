@@ -20,106 +20,117 @@ import app.model.entity.UserSearchDTO;
 
 @Repository
 public class UserRepo {
-    private NamedParameterJdbcTemplate template;
+        private NamedParameterJdbcTemplate template;
 
-    public UserRepo(NamedParameterJdbcTemplate template) {
-        this.template = template;
-    }
+        public UserRepo(NamedParameterJdbcTemplate template) {
+                this.template = template;
+        }
 
-    public Map<String, Object> save(SignInModel model, String passwordHash)
-            throws EmptyResultDataAccessException, DataAccessException {
-        var sql = """
-                insert into users(username, email, full_name, password_hash)
-                values(:username, :email, :fullName, :passwordHash)
-                returning username, created_at
-                """;
+        public Map<String, Object> save(SignInModel model, String passwordHash)
+                        throws EmptyResultDataAccessException, DataAccessException {
+                var sql = """
+                                insert into users(username, email, full_name, password_hash)
+                                values(:username, :email, :fullName, :passwordHash)
+                                returning username, created_at
+                                """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("username", model.getUsername(), Types.VARCHAR)
-                .addValue("email", model.getEmail(), Types.VARCHAR)
-                .addValue("fullName", model.getFullName(), Types.VARCHAR)
-                .addValue("passwordHash", passwordHash, Types.VARCHAR);
+                MapSqlParameterSource params = new MapSqlParameterSource()
+                                .addValue("username", model.getUsername(), Types.VARCHAR)
+                                .addValue("email", model.getEmail(), Types.VARCHAR)
+                                .addValue("fullName", model.getFullName(), Types.VARCHAR)
+                                .addValue("passwordHash", passwordHash, Types.VARCHAR);
 
-        Map<String, Object> result = template.queryForMap(sql, params);
-        return result;
-    }
+                Map<String, Object> result = template.queryForMap(sql, params);
+                return result;
+        }
 
-    public Map<String, Object> getLoginData(String username) throws EmptyResultDataAccessException {
-        var sql = """
-                select id, username, password_hash
-                from users
-                where username = :username
-                """;
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username, Types.VARCHAR);
+        public Map<String, Object> getLoginData(String username) throws EmptyResultDataAccessException {
+                var sql = """
+                                select id, username, password_hash
+                                from users
+                                where username = :username
+                                """;
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username,
+                                Types.VARCHAR);
 
-        Map<String, Object> result = template.queryForMap(sql, params);
+                Map<String, Object> result = template.queryForMap(sql, params);
 
-        return result;
-    }
+                return result;
+        }
 
-    // ini buat get post suatu user
-    public List<BasePostDTO> getPostAuthorDataProfile(String username) {
-        var sqlQuery = """
-                select *
-                from posts_with_meta
-                where author_username = :username
-                and post_reply_to is null
-                order by post_created_at desc
-                        """;
+        // ini buat get post suatu user
+        public List<BasePostDTO> getPostAuthorDataProfile(String username, int id) {
+                // var sqlQuery = """
+                // select *
+                // from posts_with_meta
+                // where author_username = :username
+                // and post_reply_to is null
+                // order by post_created_at desc
+                // """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username);
-        List<BasePostDTO> result = template.query(
-                sqlQuery,
-                params,
-                new BeanPropertyRowMapper<>(BasePostDTO.class));
-        return result;
-    }
+                var sqlQuery = """
+                                select pwm.*,
+                                        CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END AS liked
+                                        from posts_with_meta pwm
+                                        left join likes ul on ul.posts_id = pwm.posts_id and ul.user_id = :id
+                                        where pwm.author_username = :username
+                                """;
 
-    public Map<String, Object> getPublicDataByUsername(String username) {
-        var sql = """
-                select
-                    u.username,
-                    u.full_name
-                    as display_name,
-                    u.bio,
-                    u.profile_picture,
-                    u.birthday,
-                    u.created_at as joined_at,
-                    u.is_private as is_private_account
-                    from users u
-                where username = :username
-                """;
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username)
+                                .addValue("id", id, Types.INTEGER);
+                List<BasePostDTO> result = template.query(
+                                sqlQuery,
+                                params,
+                                new BeanPropertyRowMapper<>(BasePostDTO.class));
+                return result;
+        }
 
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username, Types.VARCHAR);
+        public Map<String, Object> getPublicDataByUsername(String username, int id) {
+                var sql = """
+                                select
+                                    u.username,
+                                    u.full_name
+                                    as display_name,
+                                    u.bio,
+                                    u.profile_picture,
+                                    u.birthday,
+                                    u.created_at as joined_at,
+                                    u.is_private as is_private_account
+                                    from users u
+                                where username = :username
+                                """;
 
-        UserModelResponse result = template.queryForObject(sql, params,
-                new BeanPropertyRowMapper<UserModelResponse>(UserModelResponse.class));
-        List<BasePostDTO> postDataResult = this.getPostAuthorDataProfile(username);
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username,
+                                Types.VARCHAR);
 
-        LinkedHashMap<String, Object> fullResultData = new LinkedHashMap<>();
+                UserModelResponse result = template.queryForObject(sql, params,
+                                new BeanPropertyRowMapper<UserModelResponse>(UserModelResponse.class));
+                List<BasePostDTO> postDataResult = this.getPostAuthorDataProfile(username, id);
 
-        fullResultData.put("current_user_data", result);
-        fullResultData.put("post_data", postDataResult);
-        return fullResultData;
-    }
+                LinkedHashMap<String, Object> fullResultData = new LinkedHashMap<>();
 
-    public List<UserSearchDTO> findAll(String keyword) {
-        var sql = """
-                select username,
-                full_name  as display_name,
-                profile_picture,
-                bio
-                from users
-                where username ilike :query
-                or full_name ilike :query;
-                """;
+                fullResultData.put("current_user_data", result);
+                fullResultData.put("post_data", postDataResult);
+                return fullResultData;
+        }
 
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("query", "%" + keyword + "%");
+        public List<UserSearchDTO> findAll(String keyword) {
+                var sql = """
+                                select username,
+                                full_name  as display_name,
+                                profile_picture,
+                                bio
+                                from users
+                                where username ilike :query
+                                or full_name ilike :query;
+                                """;
 
-        RowMapper<UserSearchDTO> rowMapper = new BeanPropertyRowMapper<>(UserSearchDTO.class);
+                MapSqlParameterSource params = new MapSqlParameterSource()
+                                .addValue("query", "%" + keyword + "%");
 
-        List<UserSearchDTO> result = template.query(sql, params, rowMapper);
-        return result;
-    }
+                RowMapper<UserSearchDTO> rowMapper = new BeanPropertyRowMapper<>(UserSearchDTO.class);
+
+                List<UserSearchDTO> result = template.query(sql, params, rowMapper);
+                return result;
+        }
 }

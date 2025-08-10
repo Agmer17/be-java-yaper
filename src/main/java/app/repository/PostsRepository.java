@@ -20,35 +20,44 @@ public class PostsRepository {
         @Autowired
         private NamedParameterJdbcTemplate template;
 
-        public Map<String, List<DetailedPost>> findById(String id) {
+        public Map<String, List<DetailedPost>> findById(String id, int userId) {
+                // CAST(:input_id AS uuid) AS input_id,
 
                 var sql = """
                                 WITH input_data AS (
                                             SELECT
-                                                CAST(:input_id AS uuid) AS input_id,
+                                                CAST( :input_id AS uuid) AS input_id,
                                                 parent_id AS parent_of_input
                                             FROM posts
-                                            WHERE id = CAST(:input_id AS uuid)
+                                            WHERE id = CAST( :input_id AS uuid)
                                         )
-                                        SELECT *,
+                                        SELECT pwm.*,
                                             CASE
-                                                WHEN posts_id = idata.parent_of_input THEN 'root'
-                                                WHEN posts_id = idata.input_id THEN 'current'
+                                                WHEN pwm.posts_id = idata.parent_of_input THEN 'root'
+                                                WHEN pwm.posts_id = idata.input_id THEN 'current'
                                                 ELSE 'reply'
-                                            END AS status
-                                        FROM posts_with_meta
-                                        JOIN input_data idata ON TRUE
+                                            END AS status,
+                                            CASE
+                                        	 WHEN ul.user_id IS NOT NULL THEN true ELSE false
+                                             END AS liked
+                                        FROM posts_with_meta pwm
+                                        JOIN input_data idata ON true
+                                        left join likes ul on ul.posts_id = pwm.posts_id and ul.user_id = :userId
                                         WHERE
                                             post_reply_to = idata.input_id
-                                            OR posts_id = idata.input_id
-                                            OR posts_id = idata.parent_of_input
-                                        ORDER BY post_created_at ASC
+                                            OR pwm.posts_id = idata.input_id
+                                            OR pwm.posts_id = idata.parent_of_input
+                                        ORDER BY pwm.post_created_at ASC
                                 """;
                 MapSqlParameterSource params = new MapSqlParameterSource()
-                                .addValue("input_id", id, Types.OTHER);
+                                .addValue("input_id", id, Types.OTHER)
+                                .addValue("userId", userId, Types.INTEGER);
                 List<DetailedPost> result = template.query(sql,
                                 params,
                                 new BeanPropertyRowMapper<DetailedPost>(DetailedPost.class));
+
+                // System.out.println(result +
+                // "\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 
                 Map<String, List<DetailedPost>> returnData = new LinkedHashMap<>();
                 returnData.put("root", new ArrayList<>());
@@ -91,15 +100,18 @@ public class PostsRepository {
                 return resultData;
         }
 
-        public List<BasePostDTO> randTimeline() {
+        public List<BasePostDTO> randTimeline(int id) {
                 var sql = """
-                                select *
-                                from posts_with_meta
-                                where post_reply_to is null
+                                select pwm.*,
+                                CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END AS liked
+                                from posts_with_meta pwm
+                                left join likes ul on ul.posts_id = pwm.posts_id and ul.user_id = :id
                                 order by random()
-                                limit 10
+                                limit 10;
                                 """;
-                List<BasePostDTO> result = template.query(sql,
+
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id, Types.INTEGER);
+                List<BasePostDTO> result = template.query(sql, params,
                                 new BeanPropertyRowMapper<>(BasePostDTO.class));
                 return result;
         }

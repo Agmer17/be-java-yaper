@@ -44,6 +44,8 @@ public class BasePostDTO {
     @JsonProperty("likes_count")
     private int totalLikes;
 
+    private boolean liked;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

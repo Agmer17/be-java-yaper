@@ -22,8 +22,8 @@ public class ContentPostService {
     @Autowired
     private PostsRepository repo;
 
-    public Map<String, List<DetailedPost>> getPostDetail(String postId) {
-        Map<String, List<DetailedPost>> data = repo.findById(postId);
+    public Map<String, List<DetailedPost>> getPostDetail(String postId, int id) {
+        Map<String, List<DetailedPost>> data = repo.findById(postId, id);
         return data;
     }
 
@@ -51,8 +51,8 @@ public class ContentPostService {
 
     }
 
-    public List<BasePostDTO> getTimelinePosts() {
-        List<BasePostDTO> timelinePosts = repo.randTimeline();
+    public List<BasePostDTO> getTimelinePosts(int id) {
+        List<BasePostDTO> timelinePosts = repo.randTimeline(id);
 
         return timelinePosts;
     }

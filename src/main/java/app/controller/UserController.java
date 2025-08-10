@@ -29,7 +29,8 @@ public class UserController {
     @GetMapping("/@me")
     public ResponseEntity<ApiResponse> getMyAccount(@RequestAttribute("claims") Claims token) {
         String username = token.get("username", String.class);
-        Map<String, Object> userData = svc.getUserData(username);
+        Integer id = token.get("id", Integer.class);
+        Map<String, Object> userData = svc.getUserData(username, id);
         ApiResponse response = ApiResponse.builder()
                 .status("OK")
                 .message("BERHASIL MENGAMBIL DATA")
@@ -39,8 +40,10 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<ApiResponse> getOtherUserProfile(@PathVariable String username) {
-        Map<String, Object> otherUserData = svc.getUserData(username);
+    public ResponseEntity<ApiResponse> getOtherUserProfile(@PathVariable String username,
+            @RequestAttribute("claims") Claims token) {
+        Integer id = token.get("id", Integer.class);
+        Map<String, Object> otherUserData = svc.getUserData(username, id);
         ApiResponse response = ApiResponse.builder()
                 .status("OK")
                 .message("Berhasil mengambil data")
