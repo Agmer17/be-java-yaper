@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.model.common.BasePostDTO;
+import app.model.entity.DetailedPost;
 import app.model.exception.InvalidFileType;
 import app.repository.PostsRepository;
 import app.utils.FileUtils;
@@ -21,8 +22,8 @@ public class ContentPostService {
     @Autowired
     private PostsRepository repo;
 
-    public Map<String, Object> getPostDetail(String postId) {
-        Map<String, Object> data = repo.findById(postId);
+    public Map<String, List<DetailedPost>> getPostDetail(String postId) {
+        Map<String, List<DetailedPost>> data = repo.findById(postId);
         return data;
     }
 

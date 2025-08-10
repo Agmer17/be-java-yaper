@@ -60,30 +60,11 @@ public class UserRepo {
     // ini buat get post suatu user
     public List<BasePostDTO> getPostAuthorDataProfile(String username) {
         var sqlQuery = """
-                select
-                    u.username as author_username,
-                    u.full_name as author_display_name,
-                    u.profile_picture as author_profile_photo,
-                    p.id as posts_id,
-                    p.created_at as post_created_at,
-                    p.parent_id as post_reply_to,
-                    p.text_content as post_text,
-                    p.media_url as post_media,
-                    count(r.id) as reply_count
-                from posts p
-                join users u on p.author_id = u.id
-                left join posts r on r.parent_id = p.id
-                where p.parent_id is null and u.username = :username
-                group by u.id,
-                    u.username,
-                    u.full_name,
-                    u.profile_picture,
-                    p.id,
-                    p.created_at,
-                    p.parent_id,
-                    p.text_content,
-                    p.media_url
-                order by p.created_at desc
+                select *
+                from posts_with_meta
+                where author_username = :username
+                and post_reply_to is null
+                order by post_created_at desc
                         """;
 
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("username", username);
@@ -142,32 +123,3 @@ public class UserRepo {
         return result;
     }
 }
-
-// select
-
-// u.username as author_username,
-// u.full_name as author_display_name,
-// u.profile_picture as author_profile_photo,
-// p.id as posts_id,
-// p.created_at as post_created_at,
-// p.parent_id as post_reply_to,
-// p.text_content as post_text,
-// p.media_url as post_media,
-
-// count(r.id) as reply_count
-// from posts p
-// join users u on p.author_id = u.id
-// left join posts r on r.parent_id = p.id
-
-// where to_tsvector('indonesian', coalesce(p.text_content)) @@
-// websearch_to_tsquery('indonesian','selfie OR istri')
-// group by u.id,
-// u.username,
-// u.full_name,
-// u.profile_picture,
-// p.id,
-// p.created_at,
-// p.parent_id,
-// p.text_content,
-// p.media_url
-// order by p.created_at asc;

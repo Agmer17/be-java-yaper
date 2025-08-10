@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import app.model.auth.ApiResponse;
 import app.model.common.BasePostDTO;
+import app.model.entity.DetailedPost;
 import app.model.exception.InvalidFileType;
 import app.service.ContentPostService;
 import io.jsonwebtoken.Claims;
@@ -34,7 +35,7 @@ public class PostsController {
 
         @GetMapping("/{postID}")
         public ResponseEntity<ApiResponse> getMethodName(@PathVariable UUID postID) {
-                Map<String, Object> data = svc.getPostDetail(postID.toString());
+                Map<String, List<DetailedPost>> data = svc.getPostDetail(postID.toString());
                 ApiResponse response = ApiResponse.builder()
                                 .status("OK").message("berhasil mengambil data postingan")
                                 .data(data).build();

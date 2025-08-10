@@ -1,9 +1,5 @@
 package app.model.entity;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import app.model.common.BasePostDTO;
@@ -20,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class DetailedPost extends BasePostDTO {
 
-    @JsonProperty("is_parent")
-    private boolean parent;
+    @JsonProperty("posts_node_status")
+    private String status;
 
 }

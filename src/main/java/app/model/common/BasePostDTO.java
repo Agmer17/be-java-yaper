@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import app.model.entity.DetailedPost;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,6 +40,9 @@ public class BasePostDTO {
 
     @JsonProperty("post_created_at")
     private LocalDateTime postCreatedAt;
+
+    @JsonProperty("likes_count")
+    private int totalLikes;
 
     @Override
     public boolean equals(Object o) {
