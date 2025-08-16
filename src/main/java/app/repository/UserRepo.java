@@ -17,6 +17,7 @@ import app.model.auth.SignInModel;
 import app.model.common.BasePostDTO;
 import app.model.entity.UserModelResponse;
 import app.model.entity.UserSearchDTO;
+import app.model.entity.UserUpdateRequest;
 
 @Repository
 public class UserRepo {
@@ -133,4 +134,50 @@ public class UserRepo {
                 List<UserSearchDTO> result = template.query(sql, params, rowMapper);
                 return result;
         }
+
+        public Map<String, Object> updateUser(UserUpdateRequest data, int id) {
+                StringBuilder sql = new StringBuilder("update users set ");
+                MapSqlParameterSource params = new MapSqlParameterSource();
+
+                if (isValidStringUpdate(data.getFullName())) {
+                        sql.append("full_name = :full_name, ");
+                        params.addValue("full_name", data.getFullName(), Types.VARCHAR);
+                }
+                if (isValidStringUpdate(data.getBio())) {
+                        sql.append("bio = :bio, ");
+                        params.addValue("bio", data.getBio(), Types.VARCHAR);
+                }
+                if (isValidStringUpdate(data.getProfilePicture())) {
+                        sql.append("profile_picture = :pp, ");
+                        params.addValue("pp", data.getProfilePicture(), Types.VARCHAR);
+                }
+                if (data.getBirthDay() != null) {
+                        sql.append("birthday = :birthday, ");
+                        params.addValue("birthday", data.getIsPrivate(), Types.DATE);
+                }
+                if (data.getIsPrivate() != null) {
+                        sql.append("is_private = :private, ");
+                        params.addValue("private", data.getIsPrivate(), Types.BOOLEAN);
+                }
+
+                sql.setLength(sql.length() - 2);
+                sql.append(" where id = :id returning full_name, bio, profile_picture, birthday, is_private");
+                params.addValue("id", id, Types.INTEGER);
+
+                System.out.println(
+                                sql.toString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                Map<String, Object> result = template.queryForMap(sql.toString(), params);
+
+                return result;
+
+        }
+
+        private boolean isValidStringUpdate(String data) {
+                if (data == null) {
+                        return false;
+                }
+
+                return data != null || data.trim() != "";
+        }
+
 }
