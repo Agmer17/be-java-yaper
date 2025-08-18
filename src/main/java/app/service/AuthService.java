@@ -4,10 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import app.model.auth.LoginModel;
 import app.model.auth.SignInModel;
+import app.model.exception.ResourceNotFoundExeption;
 import app.repository.UserRepo;
 import app.utils.JWTUtil;
 import app.utils.PasswordUtils;
@@ -40,7 +43,13 @@ public class AuthService {
     public Map<String, Object> loginService(LoginModel loginData) {
         String plainPw = loginData.getPassword();
 
-        Map<String, Object> userData = repo.getLoginData(loginData.getUsername());
+        Map<String, Object> userData = null;
+        try {
+            userData = repo.getLoginData(loginData.getUsername());
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundExeption("Akun tidak ditemukan!", HttpStatus.NOT_FOUND);
+        }
 
         boolean verifyPassword = BCrypt.checkpw(plainPw, userData.get("password_hash").toString());
 

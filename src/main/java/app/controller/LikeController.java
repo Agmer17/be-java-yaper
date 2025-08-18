@@ -41,7 +41,7 @@ public class LikeController {
         Integer id = token.get("id", Integer.class);
         Map<String, Object> data = svc.removeLikes(postsId, id);
 
-        ApiResponse resp = ApiResponse.builder().status("DELETED").message("berhasil menambahkan likes").data(data)
+        ApiResponse resp = ApiResponse.builder().status("DELETED").message("berhasil menhapus likes").data(data)
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(resp);

@@ -61,14 +61,6 @@ public class UserRepo {
 
         // ini buat get post suatu user
         public List<BasePostDTO> getPostAuthorDataProfile(String username, int id) {
-                // var sqlQuery = """
-                // select *
-                // from posts_with_meta
-                // where author_username = :username
-                // and post_reply_to is null
-                // order by post_created_at desc
-                // """;
-
                 var sqlQuery = """
                                 select pwm.*,
                                         CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END AS liked
@@ -135,7 +127,7 @@ public class UserRepo {
                 return result;
         }
 
-        public Map<String, Object> updateUser(UserUpdateRequest data, int id) {
+        public UserUpdateRequest updateUser(UserUpdateRequest data, int id) {
                 StringBuilder sql = new StringBuilder("update users set ");
                 MapSqlParameterSource params = new MapSqlParameterSource();
 
@@ -161,12 +153,11 @@ public class UserRepo {
                 }
 
                 sql.setLength(sql.length() - 2);
-                sql.append(" where id = :id returning full_name, bio, profile_picture, birthday, is_private");
+                sql.append(" where id = :id returning full_name, bio, profile_picture, birthday, is_private as private_account");
                 params.addValue("id", id, Types.INTEGER);
 
-                System.out.println(
-                                sql.toString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-                Map<String, Object> result = template.queryForMap(sql.toString(), params);
+                UserUpdateRequest result = template.queryForObject(sql.toString(), params,
+                                new BeanPropertyRowMapper<>(UserUpdateRequest.class));
 
                 return result;
 

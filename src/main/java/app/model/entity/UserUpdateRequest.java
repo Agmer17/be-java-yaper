@@ -2,6 +2,8 @@ package app.model.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,8 @@ public class UserUpdateRequest {
     private String bio;
     private String profilePicture;
     private LocalDate birthDay;
+
+    @JsonProperty("is_private_account")
     private Boolean isPrivate;
     // yang boleh
     // diupdate itu full_name,bio,pp,birthday,is_private

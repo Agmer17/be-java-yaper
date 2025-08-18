@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import app.model.auth.ApiResponse;
 import app.model.entity.UserSearchDTO;
+import app.model.entity.UserUpdateRequest;
 import app.service.UserService;
 import io.jsonwebtoken.Claims;
 
@@ -82,7 +83,7 @@ public class UserController {
             @RequestAttribute("claims") Claims token) throws IOException {
         Integer id = token.get("id", Integer.class);
 
-        Map<String, Object> data = svc.updateUserData(full_name, bio, profile_picture, birthday, is_private, id);
+        UserUpdateRequest data = svc.updateUserData(full_name, bio, profile_picture, birthday, is_private, id);
 
         ApiResponse response = ApiResponse.builder().status("UPDATED").message("berhasil mengupdate data").data(data)
                 .build();

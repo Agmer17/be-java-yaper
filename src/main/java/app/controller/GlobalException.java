@@ -18,6 +18,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import app.model.auth.ApiResponse;
 import app.model.exception.InvalidFileType;
+import app.model.exception.InvalidRequestData;
+import app.model.exception.ResourceNotFoundExeption;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
@@ -129,4 +131,23 @@ public class GlobalException {
                 ApiResponse.builder().status("Parsing token error").message("gagal saat parsing token")
                         .data(e.getMessage()).build());
     }
+
+    @ExceptionHandler(ResourceNotFoundExeption.class)
+    public ResponseEntity<ApiResponse> resourceNotFoundHandler(ResourceNotFoundExeption e) {
+        return ResponseEntity.status(e.getStatus()).body(
+                ApiResponse.builder().status(e.getStatus()
+                        .getReasonPhrase())
+                        .message(e.getMessage())
+                        .data(null).build());
+    }
+
+    @ExceptionHandler(InvalidRequestData.class)
+    public ResponseEntity<ApiResponse> dataRequestInvalidHandler(InvalidRequestData e) {
+        return ResponseEntity.status(e.getStatus()).body(
+                ApiResponse.builder().status(e.getStatus()
+                        .getReasonPhrase())
+                        .message(e.getMessage())
+                        .data(null).build());
+    }
+
 }

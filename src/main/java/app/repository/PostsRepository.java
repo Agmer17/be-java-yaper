@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import app.model.common.BasePostDTO;
 import app.model.entity.DetailedPost;
+import app.model.exception.ResourceNotFoundExeption;
 
 @Repository
 public class PostsRepository {
@@ -52,9 +54,16 @@ public class PostsRepository {
                 MapSqlParameterSource params = new MapSqlParameterSource()
                                 .addValue("input_id", id, Types.OTHER)
                                 .addValue("userId", userId, Types.INTEGER);
-                List<DetailedPost> result = template.query(sql,
-                                params,
-                                new BeanPropertyRowMapper<DetailedPost>(DetailedPost.class));
+
+                List<DetailedPost> result = null;
+                try {
+                        result = template.query(sql,
+                                        params,
+                                        new BeanPropertyRowMapper<DetailedPost>(DetailedPost.class));
+
+                } catch (ResourceNotFoundExeption e) {
+                        throw new ResourceNotFoundExeption("Postingan tidak ditemukan!", HttpStatus.NOT_FOUND);
+                }
 
                 // System.out.println(result +
                 // "\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
