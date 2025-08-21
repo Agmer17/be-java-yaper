@@ -1,5 +1,6 @@
 package app.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import app.model.common.BaseUserData;
 import app.model.exception.ResourceNotFoundExeption;
 import app.repository.LikesRepository;
 
@@ -35,5 +37,17 @@ public class LikesService {
             throw new ResourceNotFoundExeption("likes tidak ditemukan!", HttpStatus.GONE);
         }
         return result;
+    }
+
+    public List<BaseUserData> getLikesFromPosts(String postsId) {
+        List<BaseUserData> rs = repo.getFromPosts(postsId);
+
+        if (rs.isEmpty()) {
+            throw new ResourceNotFoundExeption(
+                    "Data postingan likes dari posts ini gak ketemu! id yang kamu masukkan salah",
+                    HttpStatus.NOT_FOUND);
+        }
+        return rs;
+
     }
 }

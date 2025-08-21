@@ -3,9 +3,11 @@ package app.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.model.auth.ApiResponse;
+import app.model.common.BaseUserData;
 import app.service.LikesService;
 import io.jsonwebtoken.Claims;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/api/likes")
@@ -46,4 +49,13 @@ public class LikeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(resp);
     }
+
+    @GetMapping("/{postsId}")
+    public ResponseEntity<ApiResponse> getLikesFromPosts(@PathVariable String postsId) {
+        List<BaseUserData> data = svc.getLikesFromPosts(postsId);
+
+        return ResponseEntity.ok().body(
+                ApiResponse.builder().status("success").message("berhasil mengambil data likes").data(data).build());
+    }
+
 }

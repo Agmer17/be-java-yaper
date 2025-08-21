@@ -1,12 +1,16 @@
 package app.repository;
 
 import java.sql.Types;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import app.model.common.BaseUserData;
 
 @Repository
 public class LikesRepository {
@@ -38,6 +42,22 @@ public class LikesRepository {
                                 .addValue("postsId", postsId, Types.OTHER)
                                 .addValue("userId", userId, Types.INTEGER);
                 Map<String, Object> rs = template.queryForMap(query, params);
+                return rs;
+        }
+
+        public List<BaseUserData> getFromPosts(String postsId) {
+                var query = """
+                                select u.full_name as display_name,
+                                                u.username,
+                                                u.profile_picture
+                                                from likes l
+                                                left join users u on u.id = l.user_id
+                                                where posts_id = :postsId
+                                                """;
+
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("postsId", postsId, Types.OTHER);
+                List<BaseUserData> rs = template.query(query, params, new BeanPropertyRowMapper<>(BaseUserData.class));
+
                 return rs;
         }
 }

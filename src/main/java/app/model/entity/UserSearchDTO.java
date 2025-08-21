@@ -1,5 +1,6 @@
 package app.model.entity;
 
+import app.model.common.BaseUserData;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,9 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserSearchDTO {
-    private String displayName;
-    private String username;
-    private String profilePicture;
+public class UserSearchDTO extends BaseUserData {
     private String bio;
 }
