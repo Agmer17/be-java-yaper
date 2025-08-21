@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,10 @@ public class LikeController {
     private LikesService svc;
 
     @PostMapping("/{postsId}")
-    public ResponseEntity<ApiResponse> postsLikes(@PathVariable String postsId,
+    public ResponseEntity<ApiResponse> postsLikes(@PathVariable UUID postsId,
             @RequestAttribute("claims") Claims token) {
         Integer id = token.get("id", Integer.class);
-        Map<String, Object> data = svc.addLikes(postsId, id);
+        Map<String, Object> data = svc.addLikes(postsId.toString(), id);
 
         ApiResponse resp = ApiResponse.builder().status("CREATED").message("berhasil menambahkan likes").data(data)
                 .build();
@@ -39,10 +40,10 @@ public class LikeController {
 
     @DeleteMapping("/{postsId}")
     public ResponseEntity<ApiResponse> deleteLikes(
-            @PathVariable String postsId,
+            @PathVariable UUID postsId,
             @RequestAttribute("claims") Claims token) {
         Integer id = token.get("id", Integer.class);
-        Map<String, Object> data = svc.removeLikes(postsId, id);
+        Map<String, Object> data = svc.removeLikes(postsId.toString(), id);
 
         ApiResponse resp = ApiResponse.builder().status("DELETED").message("berhasil menhapus likes").data(data)
                 .build();
@@ -51,8 +52,8 @@ public class LikeController {
     }
 
     @GetMapping("/{postsId}")
-    public ResponseEntity<ApiResponse> getLikesFromPosts(@PathVariable String postsId) {
-        List<BaseUserData> data = svc.getLikesFromPosts(postsId);
+    public ResponseEntity<ApiResponse> getLikesFromPosts(@PathVariable UUID postsId) {
+        List<BaseUserData> data = svc.getLikesFromPosts(postsId.toString());
 
         return ResponseEntity.ok().body(
                 ApiResponse.builder().status("success").message("berhasil mengambil data likes").data(data).build());

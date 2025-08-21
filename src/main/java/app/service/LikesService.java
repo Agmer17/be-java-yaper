@@ -40,6 +40,7 @@ public class LikesService {
     }
 
     public List<BaseUserData> getLikesFromPosts(String postsId) {
+
         List<BaseUserData> rs = repo.getFromPosts(postsId);
 
         if (rs.isEmpty()) {
