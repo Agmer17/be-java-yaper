@@ -3,6 +3,7 @@ package app.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.model.auth.ApiResponse;
+import app.model.common.BasePostDTO;
 import app.model.common.BaseUserData;
 import app.service.LikesService;
 import io.jsonwebtoken.Claims;
@@ -57,6 +58,19 @@ public class LikeController {
 
         return ResponseEntity.ok().body(
                 ApiResponse.builder().status("success").message("berhasil mengambil data likes").data(data).build());
+    }
+
+    @GetMapping("/users/{username}")
+    public ResponseEntity<ApiResponse> getLikesFromUser(@PathVariable String username,
+            @RequestAttribute("claims") Claims token) {
+        Integer id = token.get("id", Integer.class);
+
+        List<BasePostDTO> data = svc.getFromUsers(username, id);
+
+        ApiResponse resp = ApiResponse.builder().status("Sucess").message("berhasil mengambil likes dari user")
+                .data(data).build();
+
+        return ResponseEntity.ok().body(resp);
     }
 
 }

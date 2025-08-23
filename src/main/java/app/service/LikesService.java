@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import app.model.common.BasePostDTO;
 import app.model.common.BaseUserData;
 import app.model.exception.ResourceNotFoundExeption;
 import app.repository.LikesRepository;
@@ -50,5 +51,11 @@ public class LikesService {
         }
         return rs;
 
+    }
+
+    public List<BasePostDTO> getFromUsers(String username, int id) {
+        List<BasePostDTO> data = repo.getFromUser(username, id);
+
+        return data;
     }
 }

@@ -1,6 +1,7 @@
 package app.utils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -14,6 +15,10 @@ public class FileUtils {
 
     public static String handleUploads(MultipartFile file, ImageType type) throws IllegalStateException, IOException {
         Path uploadDir = getAbsolutePathFromRelative(UPLOAD_DIR);
+
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
 
         String randomNewFileName = UUID.randomUUID().toString();
         String fileExt = "." + type.name().toLowerCase();
