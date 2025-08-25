@@ -79,4 +79,14 @@ public class PostsController {
                 return ResponseEntity.ok().body(responseBody);
         }
 
+        @GetMapping("/search")
+        public ResponseEntity<ApiResponse> getMethodName(@RequestParam("query") String q,
+                        @RequestAttribute("claims") Claims token) {
+                Integer id = token.get("id", Integer.class);
+                List<BasePostDTO> data = svc.findByQuery(q, id);
+                ApiResponse resp = ApiResponse.builder().status("success").message("berhasil mencari postingan")
+                                .data(data).build();
+                return ResponseEntity.ok().body(resp);
+        }
+
 }

@@ -124,4 +124,20 @@ public class PostsRepository {
                                 new BeanPropertyRowMapper<>(BasePostDTO.class));
                 return result;
         }
+
+        public List<BasePostDTO> findAll(String query, int id) {
+                var sql = """
+                                select pwm.*,
+                                        CASE WHEN ul.user_id IS NOT NULL THEN true ELSE false END AS liked
+                                        from posts_with_meta pwm
+                                        left join likes ul on ul.posts_id = pwm.posts_id and ul.user_id = :id
+                                        where to_tsvector('indonesian',coalesce(pwm.post_text ) || ' ' || coalesce(pwm.author_display_name)) @@ to_tsquery( :query )
+                                """;
+                MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id, Types.INTEGER)
+                                .addValue("query", query, Types.VARCHAR);
+
+                List<BasePostDTO> rs = template.query(sql, params, new BeanPropertyRowMapper<>(BasePostDTO.class));
+
+                return rs;
+        }
 }

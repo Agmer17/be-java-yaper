@@ -56,4 +56,10 @@ public class ContentPostService {
 
         return timelinePosts;
     }
+
+    public List<BasePostDTO> findByQuery(String query, int id) {
+        List<BasePostDTO> result = repo.findAll(query, id);
+
+        return result;
+    }
 }
